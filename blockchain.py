@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from time import time
+from urllib.parse import urlparse
 
 class Blockchain:
     
@@ -18,9 +19,15 @@ class Blockchain:
     def __init__(self):
         self.chain = []
         self.transactions = []
+        self.nodes = set()
 
     def __len__(self) -> int:
         return len(self.chain)
+    
+    def register_node(self, add:str) -> None:
+        parsed_url = urlparse(add)
+
+        self.nodes.add(parsed_url.netloc)
     
     def add_block(self, proof:int, previousHash:str=None):
 
@@ -73,3 +80,4 @@ class Blockchain:
         guess = f'{last_proof}{proof}'.encode()
         guess_hash = hash(guess)
         return guess_hash[:4] == "0000"
+    
