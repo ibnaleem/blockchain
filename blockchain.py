@@ -22,4 +22,19 @@ class Blockchain:
     def __len__(self) -> int:
         return len(self.chain)
     
-    
+    def add(self, sender:str, recipient:str, amount:int):
+        self.transactions.append({"sender": sender, "recipient": recipient, "amount": amount})
+
+        if len(self) == 0:
+            cls = self.GenesisBlock
+
+            def gph():
+                return None
+        else:
+            cls = self.Block
+
+            def gph():
+                return hash(self.chain[-1])
+            
+            self.chain.append(cls(index=len(self), timestamp=time(), transactions=self.transactions, proof=self.proof, previousHash=gph()))
+            return cls["index"] + 1
