@@ -1,3 +1,4 @@
+import json, requests
 from dataclasses import dataclass
 from time import time
 from urllib.parse import urlparse
@@ -28,6 +29,56 @@ class Blockchain:
         parsed_url = urlparse(add)
 
         self.nodes.add(parsed_url.netloc)
+
+    def valid_chain(self, chain:list) -> bool:
+        
+        last_block = chain[0]
+        current_index = 1
+
+        while current_index < len(chain):
+            block = self.Block
+            print(f'{last_block}')
+            print(f'{block}')
+            print("\n-----------\n")
+
+            if block["previousHash"] != hash(last_block):
+                return False
+            
+            if not self.valid_proof(last_block["proof"], block["proof"]):
+                return False
+            
+            last_block = block
+            current_index += 1
+
+        return True
+    
+    def resolve_conflicts(self) -> bool:
+        """
+        This is the Consensus Algorithm, it resolves conflicts
+        by replacing our chain with the longest one in the network.
+        """
+
+        neighbours = self.nodes
+        self.chain = None
+
+        max_length = len(self)
+
+        for node in neighbours:
+            response = requests.get(f"https://{node}/chain")
+
+            if response.status_code == 200:
+                length = response.json["length"]
+                chain = response.json()["chain"]
+
+                if length > max_length and self.valid_chain(chain):
+                    max_length = length
+                    new_chain = chain
+
+        if new_chain:
+            self.chain = new_chain
+            return True
+        
+        return False
     
     def add_block(self, proof:int, previousHash:str=None):
 
