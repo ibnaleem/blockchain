@@ -38,4 +38,13 @@ class Blockchain:
         self.chain.append(cls(index=len(self), timestamp=time(), transactions=self.transactions, proof=proof, previousHash=previousHash or gph()))
         self.transactions = []
         return cls
-        
+    
+    def new_transaction(self, sender:str, recipient:str, amount:int):
+        self.transactions.append({"sender":sender, "recipient":recipient, "amount": amount})
+
+        return self.last_block["index"] + 1
+
+
+    @property
+    def last_block(self):
+        return self.chain[-1]
