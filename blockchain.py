@@ -2,7 +2,7 @@ import requests
 from dataclasses import dataclass
 from time import time
 from urllib.parse import urlparse
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from uuid import uuid4
 
 class Blockchain:
@@ -171,3 +171,20 @@ def mine():
         'previous_hash': block['previous_hash'],
     }
     return jsonify(response), 200
+
+# /transactions/new to create a new transaction to a block  
+# POST request endpoint, since we’ll be posting data to it
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction():
+    values = request.get_json() # extracts the JSON data from the POST request
+
+    # Check that the required fields are in the POST data
+    required = ['sender', 'recipient', 'amount']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+
+    # Create a new Transaction
+    index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'])
+
+    response = {'message': f'Transaction will be added to Block {index}'}
+    return jsonify(response), 201 
