@@ -188,3 +188,12 @@ def new_transaction():
 
     response = {'message': f'Transaction will be added to Block {index}'}
     return jsonify(response), 201 
+
+# /chain to return the full Blockchain
+@app.route('/chain', methods=['GET'])
+def full_chain():
+    response = {
+        'chain': blockchain.chain,
+        'length': len(blockchain),
+    }
+    return jsonify(response), 200
