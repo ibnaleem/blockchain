@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from time import time
 from urllib.parse import urlparse
 from flask import Flask
+from uuid import uuid4
 
 class Blockchain:
     
@@ -132,3 +133,11 @@ class Blockchain:
         guess = f'{last_proof}{proof}'.encode()
         guess_hash = hash(guess)
         return guess_hash[:4] == "0000"
+    
+app = Flask(__name__)
+
+# Generate a globally unique address for this node
+node_identifier = str(uuid4()).replace('-', '') 
+
+# Instantiate the Blockchain
+blockchain = Blockchain()
