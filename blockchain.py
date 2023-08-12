@@ -1,8 +1,8 @@
-import json, requests
+import requests
 from dataclasses import dataclass
 from time import time
 from urllib.parse import urlparse
-from flask import Flask
+from flask import Flask, jsonify
 from uuid import uuid4
 
 class Blockchain:
@@ -141,3 +141,33 @@ node_identifier = str(uuid4()).replace('-', '')
 
 # Instantiate the Blockchain
 blockchain = Blockchain()
+
+# /mine to tell the server to mine a new block
+# GET request endpoint
+@app.route('/mine', methods=['GET']) #
+def mine():
+    last_block = blockchain.last_block
+    last_proof = last_block['proof']
+    proof = blockchain.proof_of_work(last_proof)
+
+    # receive a reward for finding the proof
+    # The sender is "0" to signify that this node has mined a new coin.
+    blockchain.new_transaction(
+        sender="0",
+        recipient=node_identifier,
+        amount=1,
+    )
+
+    # Forge the new Block by adding it to the chain
+    previous_hash = hash(last_block)
+
+    block = blockchain.add_block(proof, previous_hash)
+    
+    response = {
+        'message': "New Block Forged",
+        'index': block['index'],
+        'transactions': block['transactions'],
+        'proof': block['proof'],
+        'previous_hash': block['previous_hash'],
+    }
+    return jsonify(response), 200
