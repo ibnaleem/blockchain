@@ -2,6 +2,7 @@ import json, requests
 from dataclasses import dataclass
 from time import time
 from urllib.parse import urlparse
+from flask import Flask
 
 class Blockchain:
     
