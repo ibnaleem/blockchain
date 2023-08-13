@@ -107,7 +107,7 @@ class Blockchain:
 
     @property
     def last_block(self):
-        return self.chain[-1]
+        return self.chain[-1] if len(self) > 0 else 0
     
     def proof_of_work(self, last_proof:int) -> int:
         
